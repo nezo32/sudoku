@@ -2,25 +2,27 @@
   "name": "server",
   "version": "0.0.0",
   "description": "server side",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "license": "ISC",
   "scripts": {
     "clear": "rimraf dist",
     "compile": "tsc",
     "serve": "node dist/.",
-    "start": "yarn clear && yarn compile && yarn serve",
-    "watch": "nodemon --quiet -e ts -w ./src -x yarn run watch:serve",
-    "watch:s": "nodemon --quiet -e ts -w ./src -x yarn run --silent watch:serve",
-    "watch:silent": "yarn run -s watch:s",
-    "watch:serve": "ts-node src/index.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "start": "yarn codegen && yarn clear && yarn compile && yarn serve",
+    "dev": "tsc-watch --onSuccess \"node dist/.\""
   },
   "devDependencies": {
+    "@eddeee888/gcg-typescript-resolver-files": "^0.7.1",
+    "@graphql-codegen/cli": "5.0.0",
     "@types/node": "^20.7.0",
     "nodemon": "^3.0.1",
     "rimraf": "^5.0.4",
-    "ts-node": "^10.9.1",
-    "tslib": "^2.6.2",
+    "tsc-watch": "^6.0.4",
     "typescript": "^5.2.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "graphql": "^16.8.1",
+    "graphql-yoga": "^4.0.4"
+  }
 }
