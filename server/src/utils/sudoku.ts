@@ -10,16 +10,13 @@ export function generateSudoku(size: number, countOfBeginNumbers: number): (stri
     if (row >= board.length || column >= board.length) return true;
 
     if (board[row][column] == null) {
-      const possibleNums = new Array(9)
-        .fill(0)
+      const possibleNums = createEmptyArray(9)
         .map((_, i) => i + 1)
         .sort(() => Math.random() - 0.5);
       for (let i = 0; i < possibleNums.length; i++) {
         let randIndex = Math.floor(Math.random() * possibleNums.length);
-        if (possibleNums.length == 1) {
-          randIndex = 0;
-        }
         const value = possibleNums[randIndex].toString();
+
         if (isValidPlacement(row, column, value)) {
           setNewValue(row, column, value);
 
@@ -59,11 +56,7 @@ export function generateSudoku(size: number, countOfBeginNumbers: number): (stri
     boxes[getBoxId(row, column)].delete(value);
   }
   function getNextRowColumn(row: number, column: number): [number, number] {
-    if (column === board.length - 1) {
-      return [row + 1, 0];
-    } else {
-      return [row, column + 1];
-    }
+    return column === board.length - 1 ? [row + 1, 0] : [row, column + 1];
   }
   function isValidPlacement(row: number, column: number, value: string): boolean {
     return !rows[row].has(value) && !columns[column].has(value) && !boxes[getBoxId(row, column)].has(value);
