@@ -9,7 +9,7 @@
     "compile": "tsc",
     "serve": "node dist/.",
     "codegen": "graphql-codegen --config codegen.ts",
-    "start": "yarn codegen && yarn clear && yarn compile && yarn serve",
+    "build": "yarn codegen && yarn clear && yarn compile",
     "dev": "tsc-watch --onSuccess \"node dist/.\""
   },
   "devDependencies": {
