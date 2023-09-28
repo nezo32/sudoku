@@ -1,0 +1,6 @@
+services:
+  server:
+    container_name: server
+    image: nezo3z/sudoku-server:latest
+    ports:
+      - 4000:4000
