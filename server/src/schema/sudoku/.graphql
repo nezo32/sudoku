@@ -1,0 +1,4 @@
+extend type Query {
+  getNewSudoku(size: Int = 9, countOfBeginNumbers: Int = 45): [[String]!]!
+  validateSudoku(sudoku: [[String]!]!): Boolean
+}
