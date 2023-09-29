@@ -1,3 +1,5 @@
+import { createEmptyArray, createArrayOfSets, getBoxId } from "./general";
+
 export function generateSudoku(size: number, countOfBeginNumbers: number): (string | null)[][] {
   if (size % 3 !== 0 || size === 0) return [];
 
@@ -66,15 +68,4 @@ export function generateSudoku(size: number, countOfBeginNumbers: number): (stri
     columns[column].add(value);
     boxes[getBoxId(row, column)].add(value);
   }
-}
-
-function getBoxId(x: number, y: number) {
-  return 3 * Math.floor(x / 3) + Math.floor(y / 3);
-}
-
-function createEmptyArray(n: number) {
-  return new Array(n).fill(undefined);
-}
-function createArrayOfSets(n: number) {
-  return createEmptyArray(n).map(() => new Set<string>());
 }
