@@ -1,7 +1,7 @@
 ./**/node_modules
 .vscode
 *.env
-secrets/**/*.txt
+secrets/**/*.*
 database/data
 database/pgadmin
 *.session.sql

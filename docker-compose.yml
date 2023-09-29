@@ -58,11 +58,21 @@ services:
   server:
     container_name: sudoku-server
     image: nezo3z/sudoku-server:latest
+    environment:
+      DB_FILE: /run/secrets/db
+      USER_FILE: /run/secrets/db_user
+      PASSWORD_FILE: /run/secrets/db_password
+      JWT_SECRET: /run/secrets/jwt
     ports:
       - 4000:4000
     depends_on:
       database:
         condition: service_healthy
+    secrets:
+      - db
+      - db_user
+      - db_password
+      - jwt
 
 networks:
   database:
@@ -77,3 +87,5 @@ secrets:
     file: ./secrets/database/password.txt
   pgadmin_password:
     file: ./secrets/pgadmin/password.txt
+  jwt:
+    file: ./secrets/server/private.key
