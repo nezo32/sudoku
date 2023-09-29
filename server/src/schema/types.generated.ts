@@ -18,13 +18,19 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
-  getNewSudoku?: Maybe<Array<Maybe<Array<Maybe<Scalars['String']['output']>>>>>;
+  getNewSudoku: Array<Array<Maybe<Scalars['String']['output']>>>;
+  validateSudoku?: Maybe<Scalars['Boolean']['output']>;
 };
 
 
 export type QuerygetNewSudokuArgs = {
   countOfBeginNumbers?: InputMaybe<Scalars['Int']['input']>;
   size?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryvalidateSudokuArgs = {
+  sudoku: Array<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
@@ -113,7 +119,8 @@ export type ResolversParentTypes = {
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  getNewSudoku?: Resolver<Maybe<Array<Maybe<Array<Maybe<ResolversTypes['String']>>>>>, ParentType, ContextType, RequireFields<QuerygetNewSudokuArgs, 'countOfBeginNumbers' | 'size'>>;
+  getNewSudoku?: Resolver<Array<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType, RequireFields<QuerygetNewSudokuArgs, 'countOfBeginNumbers' | 'size'>>;
+  validateSudoku?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<QueryvalidateSudokuArgs, 'sudoku'>>;
 };
 
 export type Resolvers<ContextType = any> = {
