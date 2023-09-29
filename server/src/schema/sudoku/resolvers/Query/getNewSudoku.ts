@@ -1,6 +1,5 @@
-import { generateSudoku } from "../../../../utils/sudoku/generator";
-import type { QueryResolvers } from "./../../../types.generated";
-export const getNewSudoku: NonNullable<QueryResolvers['getNewSudoku']> = async (_parent, _arg, _ctx) => {
-  const tmp = generateSudoku(_arg.size, _arg.countOfBeginNumbers);
-  return tmp;
+import type { QueryResolvers } from "@/schema/types.generated";
+import { generateSudoku } from "@/sudoku/generator";
+export const getNewSudoku: NonNullable<QueryResolvers["getNewSudoku"]> = async (_parent, _arg, _ctx) => {
+  return generateSudoku(_arg.size, _arg.countOfBeginNumbers);
 };
