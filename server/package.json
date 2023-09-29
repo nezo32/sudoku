@@ -8,21 +8,42 @@
     "clear": "rimraf dist",
     "compile": "tsc",
     "serve": "node dist/.",
-    "codegen": "graphql-codegen --config codegen.ts",
-    "build": "yarn codegen && yarn clear && yarn compile",
-    "dev": "tsc-watch --onSuccess \"node dist/.\""
+    "codegen:graphql": "graphql-codegen --config codegen.ts",
+    "codegen:database": "prisma db pull",
+    "codegen:prisma": "prisma generate",
+    "build": "yarn codegen:graphql && yarn clear && yarn compile",
+    "dev": "tsc-watch --onSuccess \"node dist/.\"",
+    "migrate": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql",
+    "resolve": "prisma migrate resolve --applied 0_init",
+    "migrage:dev": "prisma migrate dev"
+  },
+  "_moduleAliases": {
+    "@": "./dist"
   },
   "devDependencies": {
     "@eddeee888/gcg-typescript-resolver-files": "^0.7.1",
     "@graphql-codegen/cli": "5.0.0",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/node": "^20.7.0",
+    "dotenv": "^16.3.1",
     "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
     "rimraf": "^5.0.4",
     "tsc-watch": "^6.0.4",
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@graphql-yoga/plugin-jwt": "^1.1.0",
+    "@prisma/client": "^5.3.1",
+    "@types/bcrypt": "^5.0.0",
+    "@types/module-alias": "^2.0.2",
+    "@whatwg-node/server-plugin-cookies": "^1.0.2",
+    "bcrypt": "^5.1.1",
     "graphql": "^16.8.1",
-    "graphql-yoga": "^4.0.4"
+    "graphql-scalars": "^1.22.2",
+    "graphql-yoga": "^4.0.4",
+    "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
+    "prisma": "^5.3.1"
   }
 }

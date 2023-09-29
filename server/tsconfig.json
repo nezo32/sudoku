@@ -22,7 +22,11 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
-    "lib": ["esnext"]
+    "lib": ["esnext"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*"]
 }
