@@ -1,6 +1,6 @@
 services:
   server:
-    container_name: server
+    container_name: sudoku-server
     image: nezo3z/sudoku-server:latest
     ports:
       - 4000:4000
