@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     id uuid DEFAULT uuid_generate_v4(),
     username VARCHAR(20) NOT NULL UNIQUE,
     password TEXT NOT NULL,
+    salt TEXT NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT user_username CHECK(username != '')
 );
