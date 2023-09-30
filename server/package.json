@@ -5,17 +5,19 @@
   "main": "dist/index.js",
   "license": "ISC",
   "scripts": {
+    "dev": "tsc-watch --onSuccess \"node dist/.\"",
     "clear": "rimraf dist",
     "compile": "tsc",
     "serve": "node dist/.",
+    "build": "yarn build:codegen && yarn clear && yarn compile",
+    "build:codegen": "yarn codegen:graphql & yarn codegen:prisma",
+    "build:dev": "yarn codegen:database && yarn build",
     "codegen:graphql": "graphql-codegen --config codegen.ts",
     "codegen:database": "prisma db pull",
     "codegen:prisma": "prisma generate",
-    "build": "yarn codegen:graphql && yarn clear && yarn compile",
-    "dev": "tsc-watch --onSuccess \"node dist/.\"",
-    "migrate": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql",
-    "resolve": "prisma migrate resolve --applied 0_init",
-    "migrage:dev": "prisma migrate dev"
+    "migrate:diff": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql",
+    "migrate:resolve": "prisma migrate resolve --applied 0_init",
+    "migrate:dev": "prisma migrate dev"
   },
   "_moduleAliases": {
     "@": "./dist"
