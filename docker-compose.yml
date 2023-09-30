@@ -62,6 +62,7 @@ services:
       DB_FILE: /run/secrets/db
       USER_FILE: /run/secrets/db_user
       PASSWORD_FILE: /run/secrets/db_password
+      DB_URL_FILE: /run/secrets/db_url
       JWT_SECRET: /run/secrets/jwt
     ports:
       - 4000:4000
@@ -72,6 +73,7 @@ services:
       - db
       - db_user
       - db_password
+      - db_url
       - jwt
 
 networks:
@@ -85,6 +87,8 @@ secrets:
     file: ./secrets/database/db.txt
   db_password:
     file: ./secrets/database/password.txt
+  db_url:
+    file: ./secrets/server/dburl.txt
   pgadmin_password:
     file: ./secrets/pgadmin/password.txt
   jwt:
