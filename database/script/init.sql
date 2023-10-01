@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS games (
     id uuid DEFAULT uuid_generate_v4(),
     player_id uuid,
-    board text NOT NULL,
-    begin_date timestamp with time zone DEFAULT now(),
+    board CHAR [] [] NOT NULL,
+    begin_date date,
     PRIMARY KEY (id)
 );
 ALTER TABLE games
