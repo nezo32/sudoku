@@ -3,6 +3,8 @@ import type { MutationResolvers } from "@/schema/types.generated";
 import { getHashedPassword } from "@/security/hash";
 import { jwtSign } from "@/security/jwt";
 import { createGraphQLError } from "graphql-yoga";
+import ms from "ms";
+
 export const login: NonNullable<MutationResolvers["login"]> = async (_parent, _arg, _ctx) => {
   const { username, password } = _arg.data;
 
@@ -16,15 +18,18 @@ export const login: NonNullable<MutationResolvers["login"]> = async (_parent, _a
     throw createGraphQLError("Invalid password");
   }
 
-  const token = jwtSign({ id: dbResult.id, username: dbResult.username });
+  const expireTime = "1d";
+  const expires = new Date(new Date().getTime() * ms(expireTime));
+
+  const token = jwtSign({ id: dbResult.id, username: dbResult.username }, expireTime);
 
   await _ctx.request.cookieStore?.set({
     name: "authorization",
     value: token,
-    expires: new Date(new Date().getTime() * 1000 * 60 * 60 * 24),
     domain: "localhost",
     secure: true,
     sameSite: "strict",
+    expires,
   });
 
   return true;

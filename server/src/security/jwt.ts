@@ -13,7 +13,19 @@ if (!privateKeyPath) {
 
 export const jwtSecret = readFileSync(privateKeyPath);
 
-export function jwtSign(user: UserCredentials) {
+export function jwtSign(user: UserCredentials, expiresIn: string) {
   const { username, id } = user;
-  return jwt.sign({ username }, jwtSecret, { subject: id, algorithm: "RS256" });
+  return jwt.sign({ username }, jwtSecret, {
+    issuer: process.env.JWT_ISSUER ?? "noone",
+    subject: id,
+    algorithm: "RS256",
+    expiresIn,
+  });
+}
+
+export function jwtVerify(token: string) {
+  return jwt.verify(token, jwtSecret, {
+    algorithms: ["RS256"],
+    issuer: process.env.JWT_ISSUER ?? "noone",
+  });
 }

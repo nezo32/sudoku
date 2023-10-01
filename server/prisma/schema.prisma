@@ -10,8 +10,8 @@ datasource db {
 model games {
   id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   player_id  String?   @db.Uuid
-  board      String[]  @db.Char(1)
-  begin_date DateTime? @db.Date
+  board      String
+  begin_date DateTime? @default(now()) @db.Timestamptz(6)
   users      users?    @relation(fields: [player_id], references: [id], onDelete: Cascade)
 }
 

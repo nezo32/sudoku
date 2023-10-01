@@ -7,3 +7,13 @@ export async function getUser(username: string) {
     },
   });
 }
+
+export async function createUser(username: string, password: string, salt: string) {
+  return await prisma.users.create({
+    data: {
+      username,
+      password,
+      salt,
+    },
+  });
+}
