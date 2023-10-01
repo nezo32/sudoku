@@ -5,4 +5,5 @@ input AuthData {
 extend type Mutation {
   login(data: AuthData!): Boolean
   register(data: AuthData!): Boolean
+  logout: Boolean
 }

@@ -10,7 +10,7 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends " $fragmentName" |
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
+  ID: { input: string; output: string | number };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
@@ -23,10 +23,25 @@ export type AuthData = {
   username: Scalars["String"]["input"];
 };
 
+export type Game = {
+  __typename?: "Game";
+  begin_date?: Maybe<Scalars["DateTime"]["output"]>;
+  board: Array<Array<Maybe<Scalars["String"]["output"]>>>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  player_id?: Maybe<Scalars["String"]["output"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
+  getNewSudoku: Array<Array<Maybe<Scalars["String"]["output"]>>>;
   login?: Maybe<Scalars["Boolean"]["output"]>;
+  logout?: Maybe<Scalars["Boolean"]["output"]>;
   register?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type MutationgetNewSudokuArgs = {
+  countOfBeginNumbers?: InputMaybe<Scalars["Int"]["input"]>;
+  size?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type MutationloginArgs = {
@@ -39,13 +54,12 @@ export type MutationregisterArgs = {
 
 export type Query = {
   __typename?: "Query";
-  getNewSudoku: Array<Array<Maybe<Scalars["String"]["output"]>>>;
+  getUserSudoku: Array<Maybe<Game>>;
   validateSudoku?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
-export type QuerygetNewSudokuArgs = {
-  countOfBeginNumbers?: InputMaybe<Scalars["Int"]["input"]>;
-  size?: InputMaybe<Scalars["Int"]["input"]>;
+export type QuerygetUserSudokuArgs = {
+  user_id?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type QueryvalidateSudokuArgs = {
@@ -127,10 +141,12 @@ export type ResolversTypes = {
   AuthData: AuthData;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]["output"]>;
+  Game: ResolverTypeWrapper<Game>;
+  ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   Mutation: ResolverTypeWrapper<{}>;
+  Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Query: ResolverTypeWrapper<{}>;
-  Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -138,21 +154,41 @@ export type ResolversParentTypes = {
   AuthData: AuthData;
   String: Scalars["String"]["output"];
   DateTime: Scalars["DateTime"]["output"];
+  Game: Game;
+  ID: Scalars["ID"]["output"];
   Mutation: {};
+  Int: Scalars["Int"]["output"];
   Boolean: Scalars["Boolean"]["output"];
   Query: {};
-  Int: Scalars["Int"]["output"];
 };
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
   name: "DateTime";
 }
 
+export type GameResolvers<
+  ContextType = RequestContextType,
+  ParentType extends ResolversParentTypes["Game"] = ResolversParentTypes["Game"],
+> = {
+  begin_date?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  board?: Resolver<Array<Array<Maybe<ResolversTypes["String"]>>>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes["ID"]>, ParentType, ContextType>;
+  player_id?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<
   ContextType = RequestContextType,
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"],
 > = {
+  getNewSudoku?: Resolver<
+    Array<Array<Maybe<ResolversTypes["String"]>>>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationgetNewSudokuArgs, "countOfBeginNumbers" | "size">
+  >;
   login?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType, RequireFields<MutationloginArgs, "data">>;
+  logout?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
   register?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,
@@ -165,11 +201,11 @@ export type QueryResolvers<
   ContextType = RequestContextType,
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"],
 > = {
-  getNewSudoku?: Resolver<
-    Array<Array<Maybe<ResolversTypes["String"]>>>,
+  getUserSudoku?: Resolver<
+    Array<Maybe<ResolversTypes["Game"]>>,
     ParentType,
     ContextType,
-    RequireFields<QuerygetNewSudokuArgs, "countOfBeginNumbers" | "size">
+    Partial<QuerygetUserSudokuArgs>
   >;
   validateSudoku?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
@@ -181,6 +217,7 @@ export type QueryResolvers<
 
 export type Resolvers<ContextType = RequestContextType> = {
   DateTime?: GraphQLScalarType;
+  Game?: GameResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 };
