@@ -1,3 +1,3 @@
 import { YogaInitialContext } from "graphql-yoga";
 
-export type RequestContextType = YogaInitialContext;
+export type RequestContextType = YogaInitialContext & { user_id?: string };
