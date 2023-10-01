@@ -9,6 +9,8 @@ import { useJWT } from "@graphql-yoga/plugin-jwt";
 import { useCookies } from "@whatwg-node/server-plugin-cookies";
 import { jwtSecret } from "@/security/jwt";
 import { prisma } from "@/prisma";
+import { applyMiddleware } from "graphql-middleware";
+import { jwtCheck } from "@/middleware/jwt";
 
 process.on("exit", async () => {
   await prisma.$disconnect();
@@ -17,14 +19,19 @@ process.on("exit", async () => {
 async function main() {
   await prisma.$connect();
 
-  const yoga = createYoga({
-    schema: createSchema({
+  const middlewareSchema = applyMiddleware(
+    createSchema({
       typeDefs,
       resolvers,
     }),
+    jwtCheck,
+  );
+
+  const yoga = createYoga({
+    schema: middlewareSchema,
     plugins: [
       useJWT({
-        issuer: "http://graphql-yoga.com",
+        issuer: process.env.JWT_ISSUER ?? "noone",
         signingKey: jwtSecret.toString(),
         algorithms: ["RS256"],
         async getToken(params) {
@@ -42,6 +49,4 @@ async function main() {
   });
 }
 
-main().then(() => {
-  console.info("Program end");
-});
+main().then();
