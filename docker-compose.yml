@@ -75,6 +75,8 @@ services:
       - db_password
       - db_url
       - jwt
+    networks:
+      - database
 
 networks:
   database:
