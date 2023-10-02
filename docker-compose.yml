@@ -1,0 +1,95 @@
+services:
+  database:
+    container_name: sudoku-database
+    image: postgres:16
+    environment:
+      POSTGRES_DB_FILE: /run/secrets/db
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      PGDATA: "/var/lib/postgresql/data/pgdata/."
+    ports:
+      - 5432:5432
+    volumes:
+      - ./database/script:/docker-entrypoint-initdb.d
+      - ./database/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U SuRoot -d SudokuDB"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+    secrets:
+      - db
+      - db_user
+      - db_password
+    networks:
+      - database
+
+  pgadmin:
+    container_name: sudoku-pgadmin
+    image: dpage/pgadmin4:7.7
+    env_file:
+      - ./pgadmin.env
+    environment:
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
+    volumes:
+      - ./database/pgadmin/.:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - database
+    secrets:
+      - pgadmin_password
+
+  server:
+    container_name: sudoku-server
+    image: nezo3z/sudoku-server:latest
+    environment:
+      DB_FILE: /run/secrets/db
+      USER_FILE: /run/secrets/db_user
+      PASSWORD_FILE: /run/secrets/db_password
+      DB_URL_FILE: /run/secrets/db_url
+      JWT_SECRET: /run/secrets/jwt
+    ports:
+      - 4000:4000
+    depends_on:
+      database:
+        condition: service_healthy
+    secrets:
+      - db
+      - db_user
+      - db_password
+      - db_url
+      - jwt
+
+networks:
+  database:
+    driver: bridge
+
+secrets:
+  db_user:
+    file: ./secrets/database/user.txt
+  db:
+    file: ./secrets/database/db.txt
+  db_password:
+    file: ./secrets/database/password.txt
+  db_url:
+    file: ./secrets/server/dburl.txt
+  pgadmin_password:
+    file: ./secrets/pgadmin/password.txt
+  jwt:
+    file: ./secrets/server/private.key

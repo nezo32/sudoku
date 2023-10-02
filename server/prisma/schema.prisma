@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model games {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  player_id  String?   @db.Uuid
+  board      String
+  begin_date DateTime? @default(now()) @db.Timestamptz(6)
+  users      users?    @relation(fields: [player_id], references: [id], onDelete: Cascade)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id       String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  username String  @unique @db.VarChar(20)
+  password String
+  salt     String
+  games    games[]
+}

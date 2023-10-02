@@ -1,0 +1,15 @@
+type Game {
+  id: ID
+  board: [[String]!]!
+  player_id: String
+  begin_date: DateTime
+}
+
+extend type Query {
+  validateSudoku(sudoku: [[String]!]!): Boolean
+  getUserSudoku(user_id: String): [Game]!
+}
+
+extend type Mutation {
+  getNewSudoku(size: Int = 9, countOfBeginNumbers: Int = 45): [[String]!]!
+}
