@@ -16,8 +16,7 @@ const light: ThemeDefinition = {
     background: '#F5F5F5',
     surface: '#FFFFFF',
     primary: '#004D40',
-    secondary: '#00796B',
-    chart: '#515152'
+    secondary: '#00796B'
   }
 }
 
@@ -27,8 +26,7 @@ const dark: ThemeDefinition = {
     background: '#212121',
     surface: '#424242',
     primary: '#26C6DA',
-    secondary: '#0096a8',
-    chart: '#656565'
+    secondary: '#0096a8'
   }
 }
 

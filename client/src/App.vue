@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 import { useTheme } from 'vuetify'
-import { useThemeStore } from '@/stores/theme'
+import { useThemeStore } from '@/stores'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
+import MainBase from './components/bases/MainBase.vue'
+
+const route = useRoute()
 
 const theme = useTheme()
 const themeStore = useThemeStore()
 const { theme: currentTheme } = storeToRefs(themeStore)
+
+const mainView = computed(() => !route.fullPath.includes('authentication'))
 
 const mediaQuery = '(prefers-color-scheme: dark)'
 
@@ -57,7 +63,10 @@ function getCurrentSystemTheme() {
 </script>
 
 <template>
-  <div></div>
+  <VApp>
+    <MainBase v-if="mainView" />
+    <RouterView v-else />
+  </VApp>
 </template>
 
 <style scoped lang="scss"></style>

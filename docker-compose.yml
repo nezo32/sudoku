@@ -64,6 +64,7 @@ services:
       PASSWORD_FILE: /run/secrets/db_password
       DB_URL_FILE: /run/secrets/db_url
       JWT_SECRET: /run/secrets/jwt
+      JWT_ISSUER: https://t.me/nz3301
     ports:
       - 4000:4000
     depends_on:
