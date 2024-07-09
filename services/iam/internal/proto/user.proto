@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "protos/user";
+
+import "google/protobuf/timestamp.proto";
+
+message UserRequest { string ID = 1; }
+
+message UserResponse {
+  string ID = 1;
+  string FirstName = 2;
+  string LastName = 3;
+  string Email = 4;
+  google.protobuf.Timestamp CreatedAt = 5;
+  optional google.protobuf.Timestamp UpdatedAt = 6;
+}
+
+message UserListResponse { repeated UserResponse UserList = 1; }

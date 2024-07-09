@@ -1,0 +1,43 @@
+services:
+  postgres:
+    container_name: iam-postgres
+    image: postgres:16.3
+    volumes:
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: IAM
+      POSTGRES_USER: IAM_ADMIN
+      POSTGRES_PASSWORD: testtest
+      PGDATA: "/var/lib/postgresql/data/pgdata/."
+    ports:
+      - "127.0.0.1:5454:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U IAM_ADMIN -d IAM"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: iam-pgadmin
+    image: dpage/pgadmin4:7.7
+    user: root
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "nezo@pg.com"
+      PGADMIN_DEFAULT_PASSWORD: "pgadmin"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./database/pgadmin/.:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    depends_on:
+      postgres:
+        condition: service_healthy

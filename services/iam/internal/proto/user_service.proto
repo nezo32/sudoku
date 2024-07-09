@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = "protos/user";
+
+import "internal/proto/user.proto";
+import "google/protobuf/empty.proto";
+
+service UserService {
+  rpc Get(UserRequest) returns (UserResponse);
+  rpc List(google.protobuf.Empty) returns (UserListResponse);
+}
