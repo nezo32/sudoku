@@ -4,15 +4,15 @@ option go_package = "protos/user";
 
 import "google/protobuf/timestamp.proto";
 
-message UserRequest { string ID = 1; }
+message UserRequest { string id = 1; }
 
 message UserResponse {
-  string ID = 1;
-  string FirstName = 2;
-  string LastName = 3;
-  string Email = 4;
-  google.protobuf.Timestamp CreatedAt = 5;
-  optional google.protobuf.Timestamp UpdatedAt = 6;
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  google.protobuf.Timestamp created_at = 5;
+  optional google.protobuf.Timestamp updated_at = 6;
 }
 
-message UserListResponse { repeated UserResponse UserList = 1; }
+message UserListResponse { repeated UserResponse user_list = 1; }
