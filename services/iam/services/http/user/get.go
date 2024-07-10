@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/nezo32/sudoku/iam/endpoints/utils"
 	"github.com/nezo32/sudoku/iam/services"
-	"github.com/nezo32/sudoku/iam/services/user"
+	"github.com/nezo32/sudoku/iam/services/handlers/user"
+	"github.com/nezo32/sudoku/iam/services/http/utils"
 )
 
 func GetUserHanlder(ctx echo.Context, entry *utils.EndpointEntry) error {

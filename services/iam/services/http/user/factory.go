@@ -4,7 +4,7 @@ import (
 	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo/v4"
 
-	"github.com/nezo32/sudoku/iam/endpoints/utils"
+	"github.com/nezo32/sudoku/iam/services/http/utils"
 )
 
 func DefineUserEndpoints(echo *echo.Echo, database *pg.DB) {

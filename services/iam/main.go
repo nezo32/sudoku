@@ -14,9 +14,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/nezo32/sudoku/iam/endpoints"
-	"github.com/nezo32/sudoku/iam/endpoints/rpc/user_service"
 	pb "github.com/nezo32/sudoku/iam/generated/protos/user"
+	"github.com/nezo32/sudoku/iam/services/rpc/user_service"
 )
 
 func main() {
@@ -44,15 +43,13 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpc_server := grpc.NewServer()
-	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer())
-	reflection.Register(grpc_server)
-
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	endpoints.DefineEndpoints(e, db)
+	grpc_server := grpc.NewServer()
+	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(e, db))
+	reflection.Register(grpc_server)
 
 	fmt.Println("Starting http/rpc server...")
 	go grpc_server.Serve(lis)
