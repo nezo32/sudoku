@@ -16,7 +16,7 @@ migration_version:
 	migrate -path internal/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable" -verbose version
 
 generate_postgres:
-	jet -dsn=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable -path=./generated/postgres
+	cd ./generator && go run .
 
 generate_proto:
 	protoc --proto_path=. --go_out=./generated --go-grpc_out=./generated ./internal/proto/*
