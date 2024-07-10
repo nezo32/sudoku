@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/go-pg/pg/v10"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	permpb "github.com/nezo32/sudoku/iam/generated/protos/permissions"
 	"github.com/nezo32/sudoku/iam/services"
@@ -16,7 +16,7 @@ type PermissionsServiceServer struct {
 	permpb.UnimplementedPermissionsServiceServer
 }
 
-func CreateUserSerivceServer(e *echo.Echo, db *pg.DB) *PermissionsServiceServer {
+func CreateUserSerivceServer(e *echo.Echo, db *pgxpool.Pool) *PermissionsServiceServer {
 	permissions.DefinePermissonsEndpoints(e, db)
 	return &PermissionsServiceServer{ServiceContext: services.ServiceContext{Echo: e, Database: db}}
 }

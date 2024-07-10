@@ -1,11 +1,14 @@
 package services
 
 import (
-	"github.com/go-pg/pg/v10"
+	"context"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 )
 
 type ServiceContext struct {
-	Database *pg.DB
+	Database *pgxpool.Pool
+	Context  context.Context
 	Echo     *echo.Echo
 }

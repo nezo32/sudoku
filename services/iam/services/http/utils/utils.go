@@ -1,25 +1,28 @@
 package utils
 
 import (
+	"context"
 	"path"
 
-	"github.com/go-pg/pg/v10"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 )
 
 type EndpointEntry struct {
 	base_url string
 	Echo     *echo.Echo
-	Database *pg.DB
+	Database *pgxpool.Pool
+	Context  context.Context
 }
 
 type EndpointHandler func(ctx echo.Context, entry *EndpointEntry) error
 
-func CreateEndpointFactory(base_url string, echo *echo.Echo, database *pg.DB) *EndpointEntry {
+func CreateEndpointFactory(base_url string, echo *echo.Echo, database *pgxpool.Pool, ctx context.Context) *EndpointEntry {
 	return &EndpointEntry{
 		base_url,
 		echo,
 		database,
+		ctx,
 	}
 }
 

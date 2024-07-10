@@ -3,7 +3,7 @@ package user_service
 import (
 	"context"
 
-	"github.com/go-pg/pg/v10"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/nezo32/sudoku/iam/generated/postgres/IAM/public/model"
 	userpb "github.com/nezo32/sudoku/iam/generated/protos/user"
@@ -19,9 +19,9 @@ type UserSerivceServer struct {
 	userpb.UnimplementedUserServiceServer
 }
 
-func CreateUserSerivceServer(e *echo.Echo, db *pg.DB) *UserSerivceServer {
-	user.DefineUserEndpoints(e, db)
-	return &UserSerivceServer{ServiceContext: services.ServiceContext{Echo: e, Database: db}}
+func CreateUserSerivceServer(e *echo.Echo, db *pgxpool.Pool, ctx context.Context) *UserSerivceServer {
+	user.DefineUserEndpoints(e, db, ctx)
+	return &UserSerivceServer{ServiceContext: services.ServiceContext{Echo: e, Database: db, Context: ctx}}
 }
 
 func (server *UserSerivceServer) Get(ctx context.Context, req *userpb.UserRequest) (*userpb.UserResponse, error) {
@@ -44,7 +44,7 @@ func (server *UserSerivceServer) List(ctx context.Context, _ *emptypb.Empty) (*u
 	var users []*userpb.UserResponse
 
 	for _, user := range res {
-		users = append(users, dbToProtoUser(&user))
+		users = append(users, dbToProtoUser(user))
 	}
 
 	return &userpb.UserListResponse{

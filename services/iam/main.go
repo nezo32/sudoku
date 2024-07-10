@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/go-pg/pg/v10"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,20 +22,27 @@ func main() {
 	godotenv.Load()
 
 	fmt.Println("Connecting to database...")
-	db := pg.Connect(&pg.Options{
-		User:     os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		Addr:     os.Getenv("POSTGRES_HOST") + ":" + os.Getenv("POSTGRES_PORT"),
-		Database: os.Getenv("POSTGRES_DB"),
-	})
-	defer db.Close()
 
 	ctx := context.Background()
 
-	fmt.Println("Check database health...")
-	if err := db.Ping(ctx); err != nil {
-		panic(err)
+	databaseUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DB"))
+
+	conn, err := pgxpool.New(ctx, databaseUrl)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
 	}
+	defer conn.Close()
+
+	/* fmt.Println("Check database health...")
+	if err := conn.Ping(ctx); err != nil {
+		panic(err)
+	} */
 
 	fmt.Printf("Start listening on %s...\n", os.Getenv("ENDPOINT_RPC_PORT"))
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", os.Getenv("ENDPOINT_RPC_PORT")))
@@ -48,7 +55,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	grpc_server := grpc.NewServer()
-	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(e, db))
+	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(e, conn, ctx))
 	reflection.Register(grpc_server)
 
 	fmt.Println("Starting http/rpc server...")
