@@ -10,6 +10,7 @@ import (
 	"github.com/go-jet/jet/v2/generator/template"
 	postgres2 "github.com/go-jet/jet/v2/postgres"
 	"github.com/joho/godotenv"
+	"github.com/labstack/gommon/log"
 	_ "github.com/lib/pq"
 )
 
@@ -20,6 +21,7 @@ func main() {
 	port, err := strconv.Atoi(os.Getenv("POSTGRES_PORT"))
 
 	if err != nil {
+		log.Error(err)
 		fmt.Println("PORT MUST BE INTEGER")
 		panic(err)
 	}
@@ -63,6 +65,7 @@ func main() {
 	)
 
 	if err != nil {
+		log.Error(err)
 		panic(err)
 	}
 }

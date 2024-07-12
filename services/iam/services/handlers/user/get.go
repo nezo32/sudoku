@@ -1,27 +1,36 @@
 package user
 
 import (
-	"github.com/georgysavva/scany/v2/pgxscan"
+	"net/http"
+
 	"github.com/google/uuid"
-	"github.com/nezo32/sudoku/iam/generated/postgres/IAM/public/model"
+	"github.com/jackc/pgx/v5"
+	"github.com/labstack/gommon/log"
+
+	"github.com/nezo32/sudoku/iam/errors"
 	"github.com/nezo32/sudoku/iam/services"
 )
 
-func GetUserByID(ctx services.ServiceContext, input string) (*model.Users, error) {
+func GetUserByID(ctx *services.ServiceContext, input string) (*services.UsersOutput, *errors.SerivceError) {
 	id, err := uuid.Parse(input)
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, &errors.SerivceError{Code: http.StatusBadRequest, Message: "invalid uuid", Error: err}
 	}
 
-	user := model.Users{}
-	rows, err := ctx.Database.Query(ctx.Context, `select first_name, last_name, email, created_at, updated_at from users where id=$1`, id)
+	rows, err := ctx.Database.Query(ctx.Context, `select id, username, first_name, last_name, email, created_at, updated_at from users where id=$1`, id)
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
 	}
-	err = pgxscan.ScanOne(&user, rows)
+	res, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[services.UsersOutput])
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		if pgx.ErrNoRows == err {
+			return nil, &errors.SerivceError{Code: http.StatusNotFound, Message: "user not found", Error: err}
+		}
+		return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
 	}
 
-	return &user, nil
+	return res, nil
 }

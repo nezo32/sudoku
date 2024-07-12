@@ -1,27 +1,28 @@
 package utils
 
 import (
-	"context"
 	"path"
+	"regexp"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
+	"github.com/nezo32/sudoku/iam/services"
 )
 
 type EndpointEntry struct {
 	base_url string
-	Echo     *echo.Echo
-	Database *pgxpool.Pool
-	Context  context.Context
+	*services.ServiceContext
 }
 
 type EndpointHandler func(ctx echo.Context, entry *EndpointEntry) error
 
-func CreateEndpointFactory(base_url string, echo *echo.Echo, database *pgxpool.Pool, ctx context.Context) *EndpointEntry {
+func IsEmailValid(e string) bool {
+	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	return emailRegex.MatchString(e)
+}
+
+func CreateEndpointFactory(base_url string, ctx *services.ServiceContext) *EndpointEntry {
 	return &EndpointEntry{
 		base_url,
-		echo,
-		database,
 		ctx,
 	}
 }

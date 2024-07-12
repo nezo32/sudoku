@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/georgysavva/scany v1.2.2 // indirect
 	github.com/georgysavva/scany/v2 v2.1.3 // indirect
 	github.com/go-jet/jet/v2 v2.11.1 // indirect
 	github.com/go-pg/zerochecker v0.2.0 // indirect

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/nezo32/sudoku/iam/services"
+	"github.com/nezo32/sudoku/iam/errors"
 	"github.com/nezo32/sudoku/iam/services/handlers/user"
 	"github.com/nezo32/sudoku/iam/services/http/utils"
 )
@@ -12,10 +12,10 @@ import (
 func GetUserHanlder(ctx echo.Context, entry *utils.EndpointEntry) error {
 	input := ctx.FormValue("id")
 
-	user, err := user.GetUserByID(services.ServiceContext{Database: entry.Database}, input)
+	user, err := user.GetUserByID(entry.ServiceContext, input)
 	if err != nil {
-		return ctx.String(http.StatusInternalServerError, err.Error())
+		return err.ToHTTPError(ctx)
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	return ctx.JSON(http.StatusOK, errors.HTTPResponse{Data: user})
 }

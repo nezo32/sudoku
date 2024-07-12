@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"os"
 
@@ -11,15 +10,39 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	pb "github.com/nezo32/sudoku/iam/generated/protos/user"
+	"github.com/nezo32/sudoku/iam/security"
+	"github.com/nezo32/sudoku/iam/services"
 	"github.com/nezo32/sudoku/iam/services/rpc/user_service"
 )
 
 func main() {
 	godotenv.Load()
+
+	argonParams := security.ArgonParams{
+		Memory:      64 * 1024,
+		Iterations:  2,
+		Parallelism: 4,
+		SaltLength:  16,
+		KeyLength:   32,
+	}
+
+	hasher := security.HashPasswordGenerator(argonParams)
+
+	fmt.Println("Loading jwt...")
+
+	jwtSecret, err := os.ReadFile("../secrets/jwt_secret.key")
+
+	if err != nil {
+		log.Error(err)
+		fmt.Println("Can't read jwt secret")
+	}
+
+	jwtGenerator := security.JWTFactory(jwtSecret)
 
 	fmt.Println("Connecting to database...")
 
@@ -34,28 +57,36 @@ func main() {
 
 	conn, err := pgxpool.New(ctx, databaseUrl)
 	if err != nil {
+		log.Error(err)
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
 	defer conn.Close()
 
-	/* fmt.Println("Check database health...")
+	fmt.Println("Check database health...")
 	if err := conn.Ping(ctx); err != nil {
 		panic(err)
-	} */
+	}
 
 	fmt.Printf("Start listening on %s...\n", os.Getenv("ENDPOINT_RPC_PORT"))
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", os.Getenv("ENDPOINT_RPC_PORT")))
 	if err != nil {
+		log.Error(err)
 		log.Fatalf("failed to listen: %v", err)
+		return
 	}
 
 	e := echo.New()
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	grpc_server := grpc.NewServer()
-	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(e, conn, ctx))
+	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(&services.ServiceContext{
+		Database:       conn,
+		Echo:           e,
+		Context:        ctx,
+		JWTGenerator:   jwtGenerator,
+		PasswordEncode: hasher,
+	}))
 	reflection.Register(grpc_server)
 
 	fmt.Println("Starting http/rpc server...")

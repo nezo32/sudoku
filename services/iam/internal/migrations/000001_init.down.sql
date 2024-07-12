@@ -1,6 +1,5 @@
 BEGIN;
-
+DROP TABLE IF EXISTS user_permissions CASCADE;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS permissions;
-
 COMMIT;
