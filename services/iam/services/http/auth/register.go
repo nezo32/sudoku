@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"net/http"
@@ -6,11 +6,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/nezo32/sudoku/iam/errors"
 	"github.com/nezo32/sudoku/iam/generated/postgres/IAM/public/model"
-	handlers "github.com/nezo32/sudoku/iam/services/handlers/user"
+	handlers "github.com/nezo32/sudoku/iam/services/handlers/auth"
 	"github.com/nezo32/sudoku/iam/services/http/utils"
 )
 
-func RegisterUserHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
+func RegisterHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
 	first_name := ctx.FormValue("first_name")
 	last_name := ctx.FormValue("last_name")
 	username := ctx.FormValue("username")

@@ -14,7 +14,7 @@ import (
 type ServiceContext struct {
 	Database       *pgxpool.Pool
 	Context        context.Context
-	JWTGenerator   func(security.TokenSub) (*security.TokenPair, *errors.SerivceError)
+	JWTGenerator   func(*security.TokenSub) (*security.TokenPair, *errors.SerivceError)
 	PasswordEncode func(string) (string, error)
 	Echo           *echo.Echo
 }

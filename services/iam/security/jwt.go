@@ -1,7 +1,10 @@
 package security
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -11,8 +14,8 @@ import (
 )
 
 type TokenPair struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	AccessToken  string `json:"access_token,omitempty" form:"access_token,omitempty" query:"access_token,omitempty"`
+	RefreshToken string `json:"refresh_token,omitempty" form:"refresh_token,omitempty" query:"refresh_token,omitempty"`
 }
 
 type TokenSub struct {
@@ -21,36 +24,128 @@ type TokenSub struct {
 	Username string    `json:"username"`
 }
 
-func JWTFactory(secret []byte) func(TokenSub) (*TokenPair, *errors.SerivceError) {
-	sec := secret
-
-	return func(claims TokenSub) (*TokenPair, *errors.SerivceError) {
+func JWTFactory() func(*TokenSub) (*TokenPair, *errors.SerivceError) {
+	jwtSecret := os.Getenv("JWT_SECRET_KEY")
+	return func(sub *TokenSub) (*TokenPair, *errors.SerivceError) {
+		var err error
 
 		expiration_short := time.Now().Add(time.Hour * 72)
 		expiration_long := time.Now().Add(time.Hour * 24 * 30)
 
-		access_token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"sub": claims,
+		jwtClaims := jwt.MapClaims{
+			"sub": sub,
 			"exp": expiration_short.Unix(),
-		})
-		refresh_token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"sub": claims.ID,
-			"exp": expiration_long.Unix(),
-		})
-		access_signed, err := access_token.SignedString(sec)
-		if err != nil {
-			log.Error(err)
-			return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Message: "Can't sign JWT token", Error: err}
-		}
-		refresh_signed, err := refresh_token.SignedString(sec)
-		if err != nil {
-			log.Error(err)
-			return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Message: "Can't sign JWT token", Error: err}
 		}
 
-		return &TokenPair{
-			AccessToken:  access_signed,
-			RefreshToken: refresh_signed,
-		}, nil
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims)
+		jwt := &TokenPair{}
+
+		jwt.AccessToken, err = token.SignedString([]byte(jwtSecret))
+		if err != nil {
+			log.Error(err)
+			return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
+		}
+
+		return createRefreshToken(jwt, jwtSecret, expiration_long)
 	}
+}
+
+func ValidateRefreshToken(pair *TokenPair) (*TokenSub, *errors.SerivceError) {
+	token, err := jwt.Parse(pair.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+
+	user := TokenSub{}
+	if err != nil {
+		log.Error(err)
+		return nil, &errors.SerivceError{Code: http.StatusUnauthorized, Error: err}
+	}
+
+	payload, ok := token.Claims.(jwt.MapClaims)
+	if !(ok && token.Valid) {
+		return nil, &errors.SerivceError{Code: http.StatusUnauthorized, Error: err, Message: "invalid token"}
+	}
+
+	claims := jwt.MapClaims{}
+	parser := jwt.Parser{}
+	token, _, err = parser.ParseUnverified(payload["token"].(string), claims)
+	if err != nil {
+		log.Error(err)
+		return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
+	}
+
+	payload, ok = token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, &errors.SerivceError{Code: http.StatusUnauthorized, Error: err, Message: "invalid token"}
+	}
+
+	if err = mapToStruct(payload["sub"], &user); err != nil {
+		log.Error(err)
+		return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
+	}
+
+	return &user, nil
+}
+
+func ValidateToken(accessToken string) (*TokenSub, *errors.SerivceError) {
+	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+
+	user := TokenSub{}
+	if err != nil {
+		log.Error(err)
+		return nil, &errors.SerivceError{Code: http.StatusUnauthorized, Error: err}
+	}
+
+	payload, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		if err = mapToStruct(payload["sub"], &user); err != nil {
+			log.Error(err)
+			return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
+		}
+
+		return &user, nil
+	}
+
+	return nil, &errors.SerivceError{Code: http.StatusUnauthorized, Error: err, Message: "invalid token"}
+}
+
+func createRefreshToken(token *TokenPair, jwtSecret string, expiration time.Time) (*TokenPair, *errors.SerivceError) {
+	var err error
+
+	claims := jwt.MapClaims{}
+	claims["token"] = token.AccessToken
+	claims["exp"] = expiration.Unix()
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	token.RefreshToken, err = refreshToken.SignedString([]byte(jwtSecret))
+	if err != nil {
+		log.Error(err)
+		return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
+	}
+
+	return token, nil
+}
+
+func mapToStruct[T comparable](mapped any, structure *T) error {
+	str, err := json.Marshal(mapped)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(str, structure); err != nil {
+		return err
+	}
+	return nil
 }

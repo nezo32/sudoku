@@ -22,6 +22,7 @@ func main() {
 
 	if err != nil {
 		log.Error(err)
+		log.Error(err)
 		fmt.Println("PORT MUST BE INTEGER")
 		panic(err)
 	}
@@ -65,6 +66,7 @@ func main() {
 	)
 
 	if err != nil {
+		log.Error(err)
 		log.Error(err)
 		panic(err)
 	}

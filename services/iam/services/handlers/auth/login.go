@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"net/http"
@@ -40,9 +40,10 @@ func Login(ctx *services.ServiceContext, input *LoginInput) (*security.TokenPair
 		return nil, &errors.SerivceError{Code: http.StatusBadRequest, Message: "user/password is incorrect"}
 	}
 
-	token, sErr := ctx.JWTGenerator(security.TokenSub{ID: res.ID, Username: res.Username, Email: res.Email})
+	token, sErr := ctx.JWTGenerator(&security.TokenSub{ID: res.ID, Username: res.Username, Email: res.Email})
 
 	if sErr != nil {
+		log.Error(sErr.Error)
 		return nil, sErr
 	}
 

@@ -3,6 +3,7 @@ package user_service
 import (
 	"context"
 
+	"github.com/labstack/gommon/log"
 	"github.com/nezo32/sudoku/iam/generated/postgres/IAM/public/model"
 	userpb "github.com/nezo32/sudoku/iam/generated/protos/user"
 	"github.com/nezo32/sudoku/iam/services"
@@ -26,6 +27,8 @@ func (server *UserSerivceServer) Get(ctx context.Context, req *userpb.UserReques
 	res, err := handlers.GetUserByID(server.ServiceContext, req.Id)
 
 	if err != nil {
+		log.Error(err)
+		log.Error(err.Error)
 		return nil, err.ToGRPCError()
 	}
 
@@ -44,6 +47,8 @@ func (server *UserSerivceServer) List(ctx context.Context, _ *emptypb.Empty) (*u
 	res, err := handlers.ListUsers(server.ServiceContext)
 
 	if err != nil {
+		log.Error(err)
+		log.Error(err.Error)
 		return nil, err.ToGRPCError()
 	}
 

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -28,6 +29,7 @@ func HashPasswordGenerator(params ArgonParams) func(string) (string, error) {
 	return func(password string) (string, error) {
 		salt, err := generateRandomBytes(params.SaltLength)
 		if err != nil {
+			log.Error(err)
 			return "", err
 		}
 
@@ -46,6 +48,7 @@ func HashPasswordGenerator(params ArgonParams) func(string) (string, error) {
 func CheckPasswordHash(password, encodedHash string) (bool, error) {
 	p, salt, hash, err := decodeHash(encodedHash)
 	if err != nil {
+		log.Error(err)
 		return false, err
 	}
 
@@ -61,6 +64,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	b := make([]byte, n)
 	_, err := rand.Read(b)
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 
@@ -76,6 +80,7 @@ func decodeHash(encodedHash string) (p *ArgonParams, salt, hash []byte, err erro
 	var version int
 	_, err = fmt.Sscanf(vals[2], "v=%d", &version)
 	if err != nil {
+		log.Error(err)
 		return nil, nil, nil, err
 	}
 	if version != argon2.Version {
@@ -85,17 +90,20 @@ func decodeHash(encodedHash string) (p *ArgonParams, salt, hash []byte, err erro
 	p = &ArgonParams{}
 	_, err = fmt.Sscanf(vals[3], "m=%d,t=%d,p=%d", &p.Memory, &p.Iterations, &p.Parallelism)
 	if err != nil {
+		log.Error(err)
 		return nil, nil, nil, err
 	}
 
 	salt, err = base64.RawStdEncoding.Strict().DecodeString(vals[4])
 	if err != nil {
+		log.Error(err)
 		return nil, nil, nil, err
 	}
 	p.SaltLength = uint32(len(salt))
 
 	hash, err = base64.RawStdEncoding.Strict().DecodeString(vals[5])
 	if err != nil {
+		log.Error(err)
 		return nil, nil, nil, err
 	}
 	p.KeyLength = uint32(len(hash))

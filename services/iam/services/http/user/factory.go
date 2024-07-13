@@ -10,6 +10,4 @@ func DefineUserEndpoints(ctx *services.ServiceContext) {
 
 	factory.GET("/get", GetUserHanlder)
 	factory.GET("/list", ListUserHanlder)
-	factory.POST("/register", RegisterUserHandler)
-	factory.POST("/login", LoginHandler)
 }

@@ -17,6 +17,7 @@ import (
 	pb "github.com/nezo32/sudoku/iam/generated/protos/user"
 	"github.com/nezo32/sudoku/iam/security"
 	"github.com/nezo32/sudoku/iam/services"
+	"github.com/nezo32/sudoku/iam/services/http/auth"
 	"github.com/nezo32/sudoku/iam/services/rpc/user_service"
 )
 
@@ -33,16 +34,7 @@ func main() {
 
 	hasher := security.HashPasswordGenerator(argonParams)
 
-	fmt.Println("Loading jwt...")
-
-	jwtSecret, err := os.ReadFile("../secrets/jwt_secret.key")
-
-	if err != nil {
-		log.Error(err)
-		fmt.Println("Can't read jwt secret")
-	}
-
-	jwtGenerator := security.JWTFactory(jwtSecret)
+	jwtGenerator := security.JWTFactory()
 
 	fmt.Println("Connecting to database...")
 
@@ -58,6 +50,7 @@ func main() {
 	conn, err := pgxpool.New(ctx, databaseUrl)
 	if err != nil {
 		log.Error(err)
+		log.Error(err)
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
@@ -72,6 +65,7 @@ func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", os.Getenv("ENDPOINT_RPC_PORT")))
 	if err != nil {
 		log.Error(err)
+		log.Error(err)
 		log.Fatalf("failed to listen: %v", err)
 		return
 	}
@@ -79,14 +73,18 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Recover())
 
-	grpc_server := grpc.NewServer()
-	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(&services.ServiceContext{
+	serviceCtx := &services.ServiceContext{
 		Database:       conn,
 		Echo:           e,
 		Context:        ctx,
 		JWTGenerator:   jwtGenerator,
 		PasswordEncode: hasher,
-	}))
+	}
+
+	auth.DefineAuthEndpoints(serviceCtx)
+
+	grpc_server := grpc.NewServer()
+	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(serviceCtx))
 	reflection.Register(grpc_server)
 
 	fmt.Println("Starting http/rpc server...")

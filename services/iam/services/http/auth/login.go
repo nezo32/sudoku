@@ -1,11 +1,11 @@
-package user
+package auth
 
 import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/nezo32/sudoku/iam/errors"
-	"github.com/nezo32/sudoku/iam/services/handlers/user"
+	"github.com/nezo32/sudoku/iam/services/handlers/auth"
 	"github.com/nezo32/sudoku/iam/services/http/utils"
 )
 
@@ -13,7 +13,7 @@ func LoginHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
 	username := ctx.FormValue("username")
 	password := ctx.FormValue("password")
 
-	token, err := user.Login(entry.ServiceContext, &user.LoginInput{
+	token, err := auth.Login(entry.ServiceContext, &auth.LoginInput{
 		Username: username,
 		Password: password,
 	})
@@ -23,8 +23,12 @@ func LoginHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
 	}
 
 	ctx.SetCookie(&http.Cookie{
-		Name:  "token",
+		Name:  "access_token",
 		Value: token.AccessToken,
+	})
+	ctx.SetCookie(&http.Cookie{
+		Name:  "refresh_token",
+		Value: token.RefreshToken,
 	})
 
 	return ctx.JSON(http.StatusOK, errors.HTTPResponse{Data: token})
