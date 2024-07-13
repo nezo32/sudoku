@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"path"
 	"regexp"
 
 	"github.com/labstack/echo/v4"
@@ -9,7 +8,7 @@ import (
 )
 
 type EndpointEntry struct {
-	base_url string
+	Group *echo.Group
 	*services.ServiceContext
 }
 
@@ -20,25 +19,25 @@ func IsEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-func CreateEndpointFactory(base_url string, ctx *services.ServiceContext) *EndpointEntry {
+func CreateEndpointFactory(ctx *services.ServiceContext, group *echo.Group) *EndpointEntry {
 	return &EndpointEntry{
-		base_url,
+		group,
 		ctx,
 	}
 }
 
 func (entry *EndpointEntry) GET(url string, handler EndpointHandler) {
-	entry.Echo.GET(path.Join(entry.base_url, url), func(c echo.Context) error { return handler(c, entry) })
+	entry.Group.GET(url, func(c echo.Context) error { return handler(c, entry) })
 }
 
 func (entry *EndpointEntry) POST(url string, handler EndpointHandler) {
-	entry.Echo.POST(path.Join(entry.base_url, url), func(c echo.Context) error { return handler(c, entry) })
+	entry.Group.POST(url, func(c echo.Context) error { return handler(c, entry) })
 }
 
 func (entry *EndpointEntry) PUT(url string, handler EndpointHandler) {
-	entry.Echo.PUT(path.Join(entry.base_url, url), func(c echo.Context) error { return handler(c, entry) })
+	entry.Group.PUT(url, func(c echo.Context) error { return handler(c, entry) })
 }
 
 func (entry *EndpointEntry) DELETE(url string, handler EndpointHandler) {
-	entry.Echo.DELETE(path.Join(entry.base_url, url), func(c echo.Context) error { return handler(c, entry) })
+	entry.Group.DELETE(url, func(c echo.Context) error { return handler(c, entry) })
 }

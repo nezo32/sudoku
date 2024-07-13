@@ -118,7 +118,7 @@ func ValidateToken(accessToken string) (*TokenSub, *errors.SerivceError) {
 		return &user, nil
 	}
 
-	return nil, &errors.SerivceError{Code: http.StatusUnauthorized, Error: err, Message: "invalid token"}
+	return nil, &errors.SerivceError{Code: http.StatusUnauthorized, Error: err, Message: "invalid or expired token"}
 }
 
 func createRefreshToken(token *TokenPair, jwtSecret string, expiration time.Time) (*TokenPair, *errors.SerivceError) {

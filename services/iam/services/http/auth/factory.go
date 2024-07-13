@@ -6,7 +6,8 @@ import (
 )
 
 func DefineAuthEndpoints(ctx *services.ServiceContext) {
-	factory := utils.CreateEndpointFactory("/auth", ctx)
+	group := ctx.Echo.Group("/auth")
+	factory := utils.CreateEndpointFactory(ctx, group)
 
 	factory.POST("/login", LoginHandler)
 	factory.POST("/register", RegisterHandler)

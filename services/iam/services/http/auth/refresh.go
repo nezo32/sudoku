@@ -26,7 +26,7 @@ func RefreshHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
 	}
 
 	if token.AccessToken == "" || token.RefreshToken == "" {
-		return ctx.JSON(http.StatusBadRequest, errors.HTTPResponse{Error: &errors.SerivceError{Code: http.StatusBadRequest, Message: "access and refresh tokens cannot be empty"}})
+		return ctx.JSON(http.StatusBadRequest, errors.HTTPResponse{Error: &errors.SerivceError{Code: http.StatusBadRequest, Message: "tokens are not provided"}})
 	}
 
 	user, ser_err := security.ValidateRefreshToken(token)
