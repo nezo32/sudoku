@@ -14,8 +14,8 @@ import (
 )
 
 type TokenPair struct {
-	AccessToken  string `json:"access_token,omitempty" form:"access_token,omitempty" query:"access_token,omitempty"`
-	RefreshToken string `json:"refresh_token,omitempty" form:"refresh_token,omitempty" query:"refresh_token,omitempty"`
+	AccessToken  string `json:"access_token,omitempty" form:"access_token" query:"access_token"`
+	RefreshToken string `json:"refresh_token,omitempty" form:"refresh_token" query:"refresh_token"`
 }
 
 type TokenSub struct {

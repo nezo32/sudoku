@@ -25,10 +25,12 @@ func LoginHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
 	ctx.SetCookie(&http.Cookie{
 		Name:  "access_token",
 		Value: token.AccessToken,
+		Path:  "/",
 	})
 	ctx.SetCookie(&http.Cookie{
 		Name:  "refresh_token",
 		Value: token.RefreshToken,
+		Path:  "/",
 	})
 
 	return ctx.JSON(http.StatusOK, errors.HTTPResponse{Data: token})

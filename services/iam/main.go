@@ -14,10 +14,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	pbRoles "github.com/nezo32/sudoku/iam/generated/protos/roles"
 	pb "github.com/nezo32/sudoku/iam/generated/protos/user"
 	"github.com/nezo32/sudoku/iam/security"
 	"github.com/nezo32/sudoku/iam/services"
 	"github.com/nezo32/sudoku/iam/services/http/auth"
+	"github.com/nezo32/sudoku/iam/services/http/roles"
+	"github.com/nezo32/sudoku/iam/services/rpc/roles_service"
 	"github.com/nezo32/sudoku/iam/services/rpc/user_service"
 )
 
@@ -82,9 +85,11 @@ func main() {
 	}
 
 	auth.DefineAuthEndpoints(serviceCtx)
+	roles.DefineRolesEndpoints(serviceCtx)
 
 	grpc_server := grpc.NewServer()
 	pb.RegisterUserServiceServer(grpc_server, user_service.CreateUserSerivceServer(serviceCtx))
+	pbRoles.RegisterRolesServiceServer(grpc_server, roles_service.CreateRolesServiceServer(serviceCtx))
 	reflection.Register(grpc_server)
 
 	fmt.Println("Starting http/rpc server...")

@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-option go_package = "protos/permissions";
-
-import "internal/proto/permissions.proto";
-
-service PermissionsService {
-  rpc GetByUserID(PermissionsRequest) returns (PermissionsResponse);
-}

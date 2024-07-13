@@ -28,3 +28,11 @@ type UsersOutput struct {
 	CreatedAt time.Time  `json:"created_at,omitempty" xml:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at,omitempty" xml:"updated_at"`
 }
+
+type UserEditInput struct {
+	ID        string `json:"id,omitempty" form:"id"`
+	Username  string `json:"username,omitempty" form:"username"`
+	FirstName string `json:"first_name,omitempty" form:"first_name"`
+	LastName  string `json:"last_name,omitempty" form:"last_name"`
+	Password  string `json:"password,omitempty" form:"password"`
+}

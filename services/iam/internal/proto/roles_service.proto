@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+option go_package = "protos/roles";
+
+import "internal/proto/roles.proto";
+
+service RolesService { rpc GetByUserID(RolesRequest) returns (RolesResponse); }

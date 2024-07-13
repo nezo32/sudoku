@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "protos/roles";
+
+message RolesRequest { string user_id = 1; }
+
+message Roles {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message RolesResponse { repeated Roles roles = 1; }

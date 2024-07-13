@@ -3,6 +3,7 @@ CREATE TYPE roles_titles AS ENUM (
     'iam.viewer',
     'iam.admin',
     'iam.editor',
+    'iam.self_editor',
     'sudoku.solver',
     'sudoku.viewer',
     'sudoku.admin'
@@ -30,6 +31,7 @@ INSERT INTO roles (title)
 VALUES ('iam.viewer'),
     ('iam.admin'),
     ('iam.editor'),
+    ('iam.self_editor'),
     ('sudoku.solver'),
     ('sudoku.viewer'),
     ('sudoku.admin');

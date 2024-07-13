@@ -21,7 +21,8 @@ func RefreshHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
 	} else {
 		err := ctx.Bind(token)
 		if err != nil {
-			return ctx.JSON(http.StatusBadRequest, errors.HTTPResponse{Error: &errors.SerivceError{Code: http.StatusBadRequest, Error: err}})
+			ser_err := &errors.SerivceError{Code: http.StatusBadRequest, Error: err}
+			return ser_err.ToHTTPError(ctx)
 		}
 	}
 
@@ -31,21 +32,23 @@ func RefreshHandler(ctx echo.Context, entry *utils.EndpointEntry) error {
 
 	user, ser_err := security.ValidateRefreshToken(token)
 	if ser_err != nil {
-		return ctx.JSON(ser_err.Code, errors.HTTPResponse{Error: ser_err})
+		return ser_err.ToHTTPError(ctx)
 	}
 
 	token, ser_err = entry.JWTGenerator(user)
 	if ser_err != nil {
-		return ctx.JSON(ser_err.Code, errors.HTTPResponse{Error: ser_err})
+		return ser_err.ToHTTPError(ctx)
 	}
 
 	ctx.SetCookie(&http.Cookie{
 		Name:  "access_token",
 		Value: token.AccessToken,
+		Path:  "/",
 	})
 	ctx.SetCookie(&http.Cookie{
 		Name:  "refresh_token",
 		Value: token.RefreshToken,
+		Path:  "/",
 	})
 
 	return ctx.JSON(http.StatusOK, errors.HTTPResponse{Data: token})

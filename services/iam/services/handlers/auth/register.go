@@ -56,7 +56,7 @@ func RegisterUser(ctx *services.ServiceContext, input *model.Users) (*string, *e
 		log.Error(err)
 		return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}
 	}
-	_, err = tx.Exec(ctx.Context, `insert into user_roles (user_id, role_id) values ($1, (select id from roles where title='iam.viewer'))`, id)
+	_, err = tx.Exec(ctx.Context, `insert into user_roles (user_id, role_id) values ($1, (select id from roles where title='iam.viewer')), ($1, (select id from roles where title='iam.self_editor'))`, id)
 	if err != nil {
 		log.Error(err)
 		return nil, &errors.SerivceError{Code: http.StatusInternalServerError, Error: err}

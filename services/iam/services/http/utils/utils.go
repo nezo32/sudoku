@@ -26,18 +26,18 @@ func CreateEndpointFactory(ctx *services.ServiceContext, group *echo.Group) *End
 	}
 }
 
-func (entry *EndpointEntry) GET(url string, handler EndpointHandler) {
-	entry.Group.GET(url, func(c echo.Context) error { return handler(c, entry) })
+func (entry *EndpointEntry) GET(url string, handler EndpointHandler, middlewares ...echo.MiddlewareFunc) {
+	entry.Group.GET(url, func(c echo.Context) error { return handler(c, entry) }, middlewares...)
 }
 
-func (entry *EndpointEntry) POST(url string, handler EndpointHandler) {
-	entry.Group.POST(url, func(c echo.Context) error { return handler(c, entry) })
+func (entry *EndpointEntry) POST(url string, handler EndpointHandler, middlewares ...echo.MiddlewareFunc) {
+	entry.Group.POST(url, func(c echo.Context) error { return handler(c, entry) }, middlewares...)
 }
 
-func (entry *EndpointEntry) PUT(url string, handler EndpointHandler) {
-	entry.Group.PUT(url, func(c echo.Context) error { return handler(c, entry) })
+func (entry *EndpointEntry) PUT(url string, handler EndpointHandler, middlewares ...echo.MiddlewareFunc) {
+	entry.Group.PUT(url, func(c echo.Context) error { return handler(c, entry) }, middlewares...)
 }
 
-func (entry *EndpointEntry) DELETE(url string, handler EndpointHandler) {
-	entry.Group.DELETE(url, func(c echo.Context) error { return handler(c, entry) })
+func (entry *EndpointEntry) DELETE(url string, handler EndpointHandler, middlewares ...echo.MiddlewareFunc) {
+	entry.Group.DELETE(url, func(c echo.Context) error { return handler(c, entry) }, middlewares...)
 }
