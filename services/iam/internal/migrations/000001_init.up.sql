@@ -25,7 +25,7 @@ CREATE TABLE users (
 CREATE TABLE user_roles (
     id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE
+    role_id UUID NOT NULL UNIQUE REFERENCES roles(id) ON DELETE CASCADE
 );
 INSERT INTO roles (title)
 VALUES ('iam.viewer'),

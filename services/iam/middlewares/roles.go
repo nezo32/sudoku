@@ -10,7 +10,7 @@ import (
 	handlers "github.com/nezo32/sudoku/iam/services/handlers/roles"
 )
 
-func RoleMiddleware(services_context *services.ServiceContext, roleTitles ...model.RolesTitles) echo.MiddlewareFunc {
+func RoleMiddleware(services_context *services.ServiceContext, role_titles ...model.RolesTitles) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			user, err := jwtCheckMiddleware(ctx)
@@ -29,15 +29,7 @@ func RoleMiddleware(services_context *services.ServiceContext, roleTitles ...mod
 				return err.ToHTTPError(ctx)
 			}
 
-			var neededRoleExists bool
-			for _, role := range roles {
-				for _, title := range roleTitles {
-					if role.Title == title {
-						neededRoleExists = true
-						break
-					}
-				}
-			}
+			neededRoleExists := checkRoles(role_titles, roles)
 
 			if !neededRoleExists {
 				ser_err := &errors.SerivceError{Code: http.StatusForbidden, Message: "doesn't have enough permissions"}
@@ -47,4 +39,34 @@ func RoleMiddleware(services_context *services.ServiceContext, roleTitles ...mod
 			return next(ctx)
 		}
 	}
+}
+
+func checkRoles(role_constraints []model.RolesTitles, user_roles []model.Roles) bool {
+	exists := false
+	for _, role := range user_roles {
+		for _, title := range role_constraints {
+			switch title {
+			case model.RolesTitles_IamAdmin:
+				if role.Title == model.RolesTitles_IamAdmin {
+					exists = true
+				}
+			case model.RolesTitles_IamEditor:
+				if role.Title == model.RolesTitles_IamEditor || role.Title == model.RolesTitles_IamAdmin {
+					exists = true
+				}
+			case model.RolesTitles_IamSelfEditor:
+				if role.Title == model.RolesTitles_IamEditor || role.Title == model.RolesTitles_IamAdmin || role.Title == model.RolesTitles_IamSelfEditor {
+					exists = true
+				}
+			case model.RolesTitles_IamViewer:
+				if role.Title == model.RolesTitles_IamEditor || role.Title == model.RolesTitles_IamAdmin || role.Title == model.RolesTitles_IamViewer {
+					exists = true
+				}
+			}
+		}
+		if exists {
+			break
+		}
+	}
+	return exists
 }

@@ -12,4 +12,5 @@ func DefineRolesEndpoints(ctx *services.ServiceContext) {
 	factory := utils.CreateEndpointFactory(ctx, group)
 
 	factory.GET("/get_by_id", GetUserRolesByIDHandler, middlewares.RoleMiddleware(ctx, model.RolesTitles_IamViewer))
+	factory.PUT("/update_user_role", UpdateUserRolesHandler, middlewares.RoleMiddleware(ctx, model.RolesTitles_IamAdmin))
 }
