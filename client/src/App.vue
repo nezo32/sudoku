@@ -1,7 +1,11 @@
-<script setup lang="ts"></script>
-
 <template>
-  <div></div>
+  <v-app>
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
-<style scoped lang="scss"></style>
+<script lang="ts" setup>
+  //
+</script>
