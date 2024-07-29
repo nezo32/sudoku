@@ -2,9 +2,7 @@
 </script>
 
 <template>
-  <v-app>
-    <MainHeader/>
-  </v-app>
+  <div></div>
 </template>
 
 <style scoped lang="scss">

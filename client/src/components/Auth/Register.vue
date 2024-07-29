@@ -1,9 +1,7 @@
 <template>
   <v-card
     class="mx-auto px-6 py-8"
-    color="grey-lighten-3"
     max-width="344"
-    title="User Registration"
   >
     <v-form
       v-model="form"
@@ -26,15 +24,15 @@
         ></v-text-field>
 
         <v-text-field
-        :append-inner-icon="visiblePass1 ? 'mdi-eye-off' : 'mdi-eye'"
-        :rules="[rules.passRequired, rules.passMin]"
-        :type="visiblePass1 ? 'text' : 'password'"
-        v-model="password1"
-        density="default"
-        placeholder="Enter your password"
-        prepend-inner-icon="mdi-lock-outline"
-        clearable
-        @click:append-inner="visiblePass1 = !visiblePass1"
+          :append-inner-icon="visiblePass1 ? 'mdi-eye-off' : 'mdi-eye'"
+          :rules="[rules.passRequired, rules.passMin]"
+          :type="visiblePass1 ? 'text' : 'password'"
+          v-model="password1"
+          density="default"
+          placeholder="Enter your password"
+          prepend-inner-icon="mdi-lock-outline"
+          clearable
+          @click:append-inner="visiblePass1 = !visiblePass1"
       ></v-text-field>
 
       <v-text-field

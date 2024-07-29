@@ -12,30 +12,31 @@ const router = createRouter({
   routes:
   [
     {
-      path: '/aboba',
-      name: 'Главная',
-      component: () => import("@/components/HelloWorld.vue")
-    },
+      path:'/',
+      name:'Главная страница',
+      component: () => import('@/views/MainView.vue')
+    }
+    ,
     {
       path: '/auth',
       name: 'Main',
       component: () => import("@/views/AuthView.vue"),
-      redirect: "/auth/register",
+      redirect:"/auth/login",
       children:[{
-        path: "/auth/register",
+        path: "register",
         name: "Регестрация",
         component: () => import("@/components/Auth/Register.vue")
       },
       {
-        path: "/auth/login",
+        path: "login",
         name: "Login",
         component: () => import("@/components/Auth/LogIn.vue"),
         
       }]
     },
     {
-      path: '/game',
-      name: 'Игра',
+      path: '/profile',
+      name: 'Профиль',
       component: () => import("@/views/GameView.vue")
     },
   ],

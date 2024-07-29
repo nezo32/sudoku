@@ -1,5 +1,5 @@
 <template>
-    <v-card class="mx-auto px-6 py-8" color="grey-lighten-3" max-width="344">
+    <v-card class="mx-auto px-6 py-8" color="" max-width="344">
       <v-form
         v-model="form"
         @submit.prevent="onSubmit"
@@ -14,15 +14,14 @@
         ></v-text-field>
 
         <v-text-field
-        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :rules="[rules.passRequired, rules.passMin]"
-        :type="visible ? 'text' : 'password'"
-        v-model="password"
-        density="default"
-        placeholder="Enter your password"
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        @click:append-inner="visible = !visible"
+          :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+          :rules="[rules.passRequired]"
+          :type="visible ? 'text' : 'password'"
+          v-model="password"
+          density="default"
+          placeholder="Enter your password"
+          prepend-inner-icon="mdi-lock-outline"
+          @click:append-inner="visible = !visible"
       ></v-text-field>
       
         <br>
@@ -45,6 +44,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useUserIsAuth } from '@/stores/userIsAuth';
+import { useRouter } from 'vue-router';
+
+const userAuthStore = useUserIsAuth()
+
+const router = useRouter()
 
 const form = ref(false)
 const email = ref(null)
@@ -53,16 +58,26 @@ const loading = ref(false)
 const visible = ref(false)
 const rules = ref({
   passRequired: (value : string ) => !!value || 'Required.',
-  passMin: (v : string) => v.length >= 8 || 'Min 8 characters',
   emailRequired: (v: string) => !!v || 'Field is required',
   emailValid: (v: string) => (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/).test(v) ||'Invalid email address!'
 })
 
-const onSubmit = () => {
+const onSubmit = async () => {
   if (!form.value) return
 
   loading.value = true
 
-  setTimeout(() => (loading.value = false), 2000)
+  try{
+  // запрос в БД
+  // получение данных
+  // запись данных
+  userAuthStore.userIsAuth = true
+  router.push('/')
+
+  loading.value = false
+  }
+  catch{
+    // выводить ошибку
+  }
 }
 </script>

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Autorisation: typeof import('./src/components/Auth/Autorisation.vue')['default']
+    Header: typeof import('./src/components/Header/Header.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     LogIn: typeof import('./src/components/Auth/LogIn.vue')['default']
     MainFooter: typeof import('./src/components/MainFooter.vue')['default']
@@ -16,5 +17,6 @@ declare module 'vue' {
     Registration: typeof import('./src/components/Auth/Registration.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UserMenu: typeof import('./src/components/Header/UserMenu.vue')['default']
   }
 }
