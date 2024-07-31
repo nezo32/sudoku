@@ -19,7 +19,7 @@ const router = createRouter({
     ,
     {
       path: '/auth',
-      name: 'Main',
+      name: 'Аунтификация',
       component: () => import("@/views/AuthView.vue"),
       redirect:"/auth/login",
       children:[{
@@ -35,9 +35,14 @@ const router = createRouter({
       }]
     },
     {
+      path: '/game',
+      name: 'Игра',
+      component: () => import("@/views/GameView.vue")
+    },
+    {
       path: '/profile',
       name: 'Профиль',
-      component: () => import("@/views/GameView.vue")
+      component: () => import("@/views/ProfileView.vue")
     },
   ],
 })
